@@ -80,7 +80,7 @@ public:
         _server->setEventHandler(this);
         
 
-        running_id = _event_queue->call_every(30ms, callback(this, &RadarService::loop));
+        running_id = _event_queue->call_every(150ms, callback(this, &RadarService::loop));
         _running_char.set(*_server, running_id != 0);
     }
 
@@ -143,18 +143,6 @@ private:
      */
     void onDataRead(const GattReadCallbackParams &params) override
     {
-        //printf("data read:\r\n");
-        //printf("connection handle: %u\r\n", params.connHandle);
-        //printf("attribute handle: %u", params.handle);
-        //if (params.handle == _angle_char.getValueHandle()) {
-        //    printf(" (hour characteristic)\r\n");
-        //} else if (params.handle == _distance_char.getValueHandle()) {
-        //    printf(" (minute characteristic)\r\n");
-        //} else if (params.handle == _running_char.getValueHandle()) {
-        //    printf(" (second characteristic)\r\n");
-        //} else {
-        //    printf("\r\n");
-        //}
 
         if (params.handle == _distance_char.getValueHandle())
             printf("sent updates for distance, \r\n");
@@ -203,28 +191,6 @@ private:
      */
     void authorize_client_write(GattWriteAuthCallbackParams *e)
     {
-//        printf("characteristic %u write authorization\r\n", e->handle);
-//
-//        if (e->offset != 0) {
-//            printf("Error invalid offset\r\n");
-//            e->authorizationReply = AUTH_CALLBACK_REPLY_ATTERR_INVALID_OFFSET;
-//            return;
-//        }
-//
-//        if (e->len != 1) {
-//            printf("Error invalid len\r\n");
-//            e->authorizationReply = AUTH_CALLBACK_REPLY_ATTERR_INVALID_ATT_VAL_LENGTH;
-//            return;
-//        }
-//
-//        if ((e->data[0] >= 60) ||
-//            ((e->data[0] >= 24) && (e->handle == _angle_char.getValueHandle()))) {
-//            printf("Error invalid data\r\n");
-//            e->authorizationReply = AUTH_CALLBACK_REPLY_ATTERR_WRITE_NOT_PERMITTED;
-//            return;
-//        }
-//
-//        e->authorizationReply = AUTH_CALLBACK_REPLY_SUCCESS;
     }
 
     void loop(void)
@@ -264,7 +230,7 @@ private:
             angle -= 1;
         }
     
-        float pulseWidth = 1000 + (angle * 1000.0 / 180.0); // Map degrees to pulse width (1ms to 2ms)
+        float pulseWidth = 400 + (angle * 2200.0 / 180.0); // Map degrees to pulse width (0.4ms to 2.7ms)
         servoPin.pulsewidth_us(pulseWidth);
     
         if (angle == 180 || angle == 0) {
